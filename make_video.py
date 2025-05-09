@@ -89,7 +89,6 @@ def make_video_with_subs(audio_path: str, subtitle_path: str, resolution="640x36
     trim_video_random(random_video, duration, trimmed_video_path)
 
     subtitle_path = os.path.normpath(subtitle_path)
-    print(f"SUBTLE_PATH NEW: {subtitle_path}")
 
     # *** ENSURE subtitle_path is correct ***
     if not os.path.exists(subtitle_path):
