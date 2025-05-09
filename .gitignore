@@ -35,5 +35,9 @@ build/
 output.txt
 outputeTTS.mp3
 
+output/
+
 # API keys or sensitive files
 *.env
+
+C/
