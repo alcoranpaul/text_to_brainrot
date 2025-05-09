@@ -35,11 +35,10 @@ build/
 output.txt
 outputeTTS.mp3
 
-input.txt
-
 output/
 
 # API keys or sensitive files
 *.env
 
 C/
+input.txt
