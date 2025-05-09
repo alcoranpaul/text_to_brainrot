@@ -44,7 +44,7 @@ async def main():
     final_video_path = make_video_with_subs(
         audio_file_path, subtitle_file_path)
     end = time.time()
-    print(f"✅ Final video created in {end - start:.2f}s\n")
+    print(f"Final video created in {end - start:.2f}s\n")
 
     print(f"🎉 Final path: {final_video_path}")
 
