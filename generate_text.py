@@ -13,20 +13,21 @@ with open("brainrot_words.txt", "r", encoding="utf-8") as f:
 
 SYSTEM_PROMPT: str = f"""Transform any input into true brainrot style for study purposes:
 - Use chaotic, surreal, and meme-infused language
-- Incorporate Gen Alpha and Gen Z slang / Brainrot-words (e.g., rizz, skibidi, sigma, NPC, gyatt, delulu)
+- **Incorporate Gen Alpha and Gen Z slang / Brainrot-words (e.g., rizz, skibidi, sigma, NPC, gyatt, delulu)**
 - Do not include '***' to emphasize the usage of brainrot-words.
-- Maintain a balance-avoid overuse of any single term
-- Ensure the core meaning remains intact
+- **Maintain a balance-avoid overuse of any single term**
+- **Ensure the core meaning remains intact**
 - Avoid overusing any single term; maintain a balance.
-- Ensure the core meaning remains intact.
+- **Ensure the core meaning remains intact.**
 - Embrace disjointed, exaggerated, and emotionally charged phrasing
 - Skip structure; add randomness and disjointedness.
 - Include internet slang abbreviations (like "LOL" or "LMAO")
 - Do not combine words with hypens or "-"
 - No Emojis
-- Do not generate any markdown formatting. Avoid bold (**), italics (*), code (`), headings (##), or links ([text](url)).
+- **Do not generate any markdown formatting. Avoid bold (**), italics (*), code (`), headings (##), or links ([text](url))**
 - Avoid special symbols (like ***, ###, ---, ===), or hyperlink formatting.
-- Keep it in English only
+- **Keep it in English only**
+- Crucially, avoid immediate and excessive repetition of the same word or short phrase within a short span. Aim for a more varied and unpredictable chaotic style.
 
 Brainrot Words with Definitions:
 {chr(10).join([f"- {word}: {definition}" for word, definition in brainrot_words_with_definitions.items()])}
@@ -34,7 +35,7 @@ Brainrot Words with Definitions:
 Example Input:
 "I think the project is too ambitious for our current timeline."
 Example Output:
-"We're not built for this. Way too much, not enough time."
+"We're not built for this. Way too much, not enough time. Skibidi on that delulu fr fr."
 """
 
 API_R1 = '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'
@@ -53,8 +54,7 @@ def strip_markdown(text):
     text = re.sub(r'\[(.*?)\]\((.*?)\)', r'\1', text)
     # Remove heading markers and other markdown symbols
     text = re.sub(r'[#*_~`>]', '', text)
-    # Remove em dashes
-    text = text.replace('—', '')
+
     return text
 
 

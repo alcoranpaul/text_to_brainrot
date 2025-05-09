@@ -103,10 +103,11 @@ def make_video_with_subs(audio_path: str, subtitle_path: str, resolution="640x36
         "-loglevel", "error",
         "-i", trimmed_video_path,
         "-i", audio_path,
+        "-filter_complex", "[0:a][1:a]amix=inputs=2:duration=first:dropout_transition=2",
         "-vf",
         f"scale={resolution},subtitles='{subtitle_path_ffmpeg}':force_style='FontSize={font_size},Alignment=10,MarginV=0'",
         "-map", "0:v:0",
-        "-map", "1:a:0",
+        "-map", "a",  # Map the mixed audio stream
         "-c:v", "libx264",
         "-c:a", "aac",
         "-shortest",
