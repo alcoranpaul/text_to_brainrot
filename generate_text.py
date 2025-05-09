@@ -53,6 +53,8 @@ def strip_markdown(text):
     text = re.sub(r'\[(.*?)\]\((.*?)\)', r'\1', text)
     # Remove heading markers and other markdown symbols
     text = re.sub(r'[#*_~`>]', '', text)
+    # Remove em dashes
+    text = text.replace('—', '')
     return text
 
 
