@@ -33,6 +33,7 @@ propcache==0.3.1
 pydub==0.25.1
 python-dotenv==1.1.0
 python-Levenshtein==0.27.1
+pytube==15.0.0
 RapidFuzz==3.13.0
 regex==2024.11.6
 requests==2.32.3
@@ -45,4 +46,3 @@ tqdm==4.67.1
 typing_extensions==4.13.2
 urllib3==2.4.0
 yarl==1.20.0
-yt-dlp==2025.4.30
