@@ -45,12 +45,15 @@ def trim_video_random(video_path, audio_duration, output_path):
 
     ffmpeg_cmd = [
         "ffmpeg",
+        "-hide_banner",
+        "-loglevel", "error",
         "-ss", str(start_time),
         "-i", video_path,
         "-t", str(audio_duration),
         "-c", "copy",
         output_path
     ]
+
     subprocess.run(ffmpeg_cmd, check=True)
     print(f"🎬 Trimmed video saved to {output_path}")
 
@@ -80,9 +83,7 @@ def make_video_with_subs(audio_path: str, subtitle_path: str, resolution="640x36
 
     # Pick random video and get audio duration
     random_video = get_random_video(VIDEO_DIR)
-    print(f"random_video: {random_video}")  # Add this print statement
     duration = get_audio_duration(audio_path)
-    print(f"duration: {duration}")  # Add this print statement
 
     # Trim the video
     trim_video_random(random_video, duration, trimmed_video_path)
@@ -99,6 +100,8 @@ def make_video_with_subs(audio_path: str, subtitle_path: str, resolution="640x36
 
     ffmpeg_cmd = [
         "ffmpeg",
+        "-hide_banner",
+        "-loglevel", "error",
         "-i", trimmed_video_path,
         "-i", audio_path,
         "-vf",
