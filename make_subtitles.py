@@ -57,33 +57,20 @@ def generateSubtitles(audio_file_path: str, text_file_path: str) -> str:
     subtitle_index = 1
 
     with open(srt_path, 'w', encoding='utf-8') as srt:
+        word_index = 0
+
         for segment in transcript['segments']:
             for word_info in segment['words']:
                 if word_index >= len(words):
                     break
 
-                audio_word = word_info['word']
-                text_word = words[word_index]
+                # Use the word from your source text, not Whisper
+                subtitle_word = words[word_index]
 
-                if clean_word(audio_word) != clean_word(text_word):
-                    similarity = fuzz.ratio(clean_word(
-                        audio_word), clean_word(text_word))
-                    if similarity < 60:
-                        window = words[max(0, word_index - 3)
-                                           :min(len(words), word_index + 4)]
-                        best_match, rel_idx = find_best_match(
-                            audio_word, window)
-                        word_index = max(0, word_index - 3) + rel_idx
-                        text_word = best_match
-
-                # Write subtitle entry
-                srt.write(f"{subtitle_index}\n")
                 srt.write(
-                    f"{format_time(word_info['start'])} --> {format_time(word_info['end'])}\n")
-                srt.write(f"{text_word}\n\n")
+                    f"Dialogue: 0,{format_time(word_info['start'])},{format_time(word_info['end'])},Default,,0,0,0,,{subtitle_word}\n")
 
                 word_index += 1
-                subtitle_index += 1
 
     print(f"✅ Subtitle file saved to: {srt_path}")
     return srt_path
@@ -107,6 +94,15 @@ def generateSubtitlesSSA(audio_file_path: str, text_file_path: str) -> str:
         content = file.read().replace('-', ' ')
     words = content.split()
 
+    # Flatten Whisper words
+    whisper_words = [word for segment in transcript['segments']
+                     for word in segment.get('words', [])]
+
+    # Truncate to shortest length to avoid index mismatch
+    min_len = min(len(words), len(whisper_words))
+    words = words[:min_len]
+    whisper_words = whisper_words[:min_len]
+
     base_name = "subtitle_"
     ext = ".ssa"
     counter = 1
@@ -129,46 +125,20 @@ Style: Default,Arial,52,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,-1,0,0,0,100
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 """
 
-    word_index = 0
     events = []
+    previous_end = 0.0
 
-    # Keep track of the previous word's end time to avoid overlap.
-    previous_end_time = 0
+    for idx in range(min_len):
+        start_time = max(previous_end, whisper_words[idx]['start'])
+        # avoid 0-duration
+        end_time = max(start_time + 0.01, whisper_words[idx]['end'])
 
-    for segment in transcript['segments']:
-        for word_info in segment.get('words', []):
-            if word_index >= len(words):
-                break
+        start = format_ssa_time(start_time)
+        end = format_ssa_time(end_time)
 
-            audio_word = word_info['word']
-            text_word = words[word_index]
-
-            # Handle mismatches with fuzzy matching
-            if clean_word(audio_word) != clean_word(text_word):
-                similarity = fuzz.ratio(clean_word(
-                    audio_word), clean_word(text_word))
-                if similarity < 60:
-                    window = words[max(0, word_index - 3)
-                                       :min(len(words), word_index + 4)]
-                    best_match, rel_idx = find_best_match(audio_word, window)
-                    word_index = max(0, word_index - 3) + rel_idx
-                    text_word = best_match
-
-            start = format_ssa_time(word_info['start'])
-            end = format_ssa_time(word_info['end'])
-
-            # Check if the current word's start time is close to the previous word's end time.
-            # If so, adjust to ensure no overlap.
-            if word_info['start'] < previous_end_time:
-                # Adjust the start time to avoid overlap.
-                start = format_ssa_time(previous_end_time)
-
-            events.append(
-                f"Dialogue: 0,{start},{end},Default,,0,0,0,,{text_word}")
-            # Update the previous end time.
-            previous_end_time = word_info['end']
-
-            word_index += 1
+        events.append(
+            f"Dialogue: 0,{start},{end},Default,,0,0,0,,{words[idx]}")
+        previous_end = end_time
 
     with open(ssa_path, 'w', encoding='utf-8') as ssa_file:
         ssa_file.write(header)
