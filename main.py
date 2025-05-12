@@ -3,7 +3,7 @@ import os
 import time
 from generate_text import createText
 from generate_audio import generateAudio
-from make_subtitles import generateSubtitles, generateSubtitlesSSA
+from make_subtitles import generateSubtitlesSSA
 from make_video import make_video_with_subs
 
 
@@ -27,15 +27,17 @@ async def main():
         brainrot_text_path = createText(
             input_file_path, output_brainrot_text_dir)
         end = time.time()
-        user_choice = input("Confirm text? Y/N: ").strip().lower()
         print(f"✅ Brainrot text done in {end - start:.2f}s\n")
+        user_choice = input("Confirm text? Y/N/X: ").strip().lower()
 
         if user_choice == "y":
             hasChosenBrainrotText = True
-        else:
+        elif user_choice == "n":
             if os.path.exists(brainrot_text_path):
                 os.remove(brainrot_text_path)
                 print(f"🗑️ Removed trimmed video: {brainrot_text_path}")
+        elif user_choice == "x":
+            return
 
     if brainrot_text_path != "" and brainrot_text_path != None:
         with open(brainrot_text_path, "r", encoding="utf-8") as brainrot_file:
@@ -58,7 +60,6 @@ async def main():
     # ⏱️ Generate subtitles
     start = time.time()
     print("📝 Generating subtitles...")
-    # subtitle_file_path = generateSubtitles(audio_file_path, brainrot_text_path)
     subtitle_file_path = generateSubtitlesSSA(
         audio_file_path, brainrot_text_path)
     end = time.time()
