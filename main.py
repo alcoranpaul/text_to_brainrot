@@ -3,7 +3,7 @@ import os
 import time
 from generate_text import createText
 from generate_audio import generateAudio
-from make_subtitles import generateSubtitles
+from make_subtitles import generateSubtitles, generateSubtitlesSSA
 from make_video import make_video_with_subs
 
 
@@ -13,13 +13,26 @@ async def main():
     output_brainrot_text_dir = "output/brainrot_texts"
     os.makedirs(output_audio_dir, exist_ok=True)
 
- # ⏱️ Generate brainrot text
-    start = time.time()
-    print("🧠 Generating brainrot text...")
-    brainrot_text_path = createText(input_file_path, output_brainrot_text_dir)
-    end = time.time()
-    print(f"✅ Brainrot text done in {end - start:.2f}s\n")
+    hasChosenBrainrotText: bool = False
+    while (hasChosenBrainrotText):
+        # ⏱️ Generate brainrot text
+        start = time.time()
+        print("🧠 Generating brainrot text...")
+        brainrot_text_path = createText(
+            input_file_path, output_brainrot_text_dir)
+        end = time.time()
+        user_choice = input("Confirm text? Y/N").strip().lower()
+        print(f"✅ Brainrot text done in {end - start:.2f}s\n")
 
+        if user_choice == "y":
+            hasChosenBrainrotText = True
+
+    with open(brainrot_text_path, "r", encoding="utf-8") as brainrot_file:
+        brainrot_text = brainrot_file.read()
+
+    if len(brainrot_text) <= 0:
+        print("Brainrot text is empty")
+        return
     # brainrot_text = ""
     # with open(f"{output_brainrot_text_dir}/output_1.txt", "r", encoding="utf-8") as file:
     #     brainrot_text = file.read()
@@ -34,7 +47,9 @@ async def main():
     # ⏱️ Generate subtitles
     start = time.time()
     print("📝 Generating subtitles...")
-    subtitle_file_path = generateSubtitles(audio_file_path, brainrot_text_path)
+    # subtitle_file_path = generateSubtitles(audio_file_path, brainrot_text_path)
+    subtitle_file_path = generateSubtitlesSSA(
+        audio_file_path, brainrot_text_path)
     end = time.time()
     print(f"✅ Subtitles done in {end - start:.2f}s\n")
 

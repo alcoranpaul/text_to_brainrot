@@ -58,7 +58,7 @@ def trim_video_random(video_path, audio_duration, output_path):
     print(f"🎬 Trimmed video saved to {output_path}")
 
 
-def make_video_with_subs(audio_path: str, subtitle_path: str, resolution="640x360", font_size=24, file_name=None) -> str:
+def make_video_with_subs(audio_path: str, subtitle_path: str, resolution="1080x1920", font_size=24, file_name=None) -> str:
     os.makedirs(OUTPUT_PATH, exist_ok=True)
     os.makedirs(TRIMMED_VIDEO_DIR, exist_ok=True)
 
@@ -96,6 +96,7 @@ def make_video_with_subs(audio_path: str, subtitle_path: str, resolution="640x36
         return None  # Exit if subtitle file is missing!
 
     subtitle_path_ffmpeg = subtitle_path.replace('\\', '/')
+    width, height = map(int, resolution.split('x'))
 
     ffmpeg_cmd = [
         "ffmpeg",
@@ -103,11 +104,10 @@ def make_video_with_subs(audio_path: str, subtitle_path: str, resolution="640x36
         "-loglevel", "error",
         "-i", trimmed_video_path,
         "-i", audio_path,
-        "-filter_complex", "[0:a][1:a]amix=inputs=2:duration=first:dropout_transition=2",
-        "-vf",
-        f"scale={resolution},subtitles='{subtitle_path_ffmpeg}':force_style='FontSize={font_size},Alignment=10,MarginV=0'",
+        "-filter_complex", "[0:a][1:a]amix=inputs=2:duration=first:dropout_transition=2[aout]",
+        "-vf", f"scale=-1:{height},crop={width}:{height},subtitles='{subtitle_path_ffmpeg}':force_style='FontSize={font_size},Alignment=10,MarginV=0'",
         "-map", "0:v:0",
-        "-map", "a",  # Map the mixed audio stream
+        "-map", "[aout]",
         "-c:v", "libx264",
         "-c:a", "aac",
         "-shortest",

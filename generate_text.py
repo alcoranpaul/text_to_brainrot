@@ -5,38 +5,51 @@ import requests
 
 
 brainrot_words_with_definitions = {}
-with open("brainrot_words.txt", "r", encoding="utf-8") as f:
+with open("brainrot_definitions.txt", "r", encoding="utf-8") as f:
     for line in f:
         if "–" in line:  # Ensure the line contains a definition
             word, definition = map(str.strip, line.split("–", 1))
             brainrot_words_with_definitions[word] = definition
 
-SYSTEM_PROMPT: str = f"""Transform any input into true brainrot style for study purposes:
-- Use chaotic, surreal, and meme-infused language
-- **Incorporate Gen Alpha and Gen Z slang / Brainrot-words (e.g., rizz, skibidi, sigma, NPC, gyatt, delulu)**
-- Do not include '***' to emphasize the usage of brainrot-words.
-- **Maintain a balance-avoid overuse of any single term**
-- **Ensure the core meaning remains intact**
-- Avoid overusing any single term; maintain a balance.
-- **Ensure the core meaning remains intact.**
-- Embrace disjointed, exaggerated, and emotionally charged phrasing
-- Skip structure; add randomness and disjointedness.
-- Include internet slang abbreviations (like "LOL" or "LMAO")
-- Do not combine words with hypens or "-"
-- No Emojis
-- **Do not generate any markdown formatting. Avoid bold (**), italics (*), code (`), headings (##), or links ([text](url))**
-- Avoid special symbols (like ***, ###, ---, ===), or hyperlink formatting.
-- **Keep it in English only**
-- Crucially, avoid immediate and excessive repetition of the same word or short phrase within a short span. Aim for a more varied and unpredictable chaotic style.
+italian_brainrot_words = []
 
-Brainrot Words with Definitions:
+with open("italian_brainrot_words.txt", "r", encoding="utf-8") as f:
+    for line in f:
+        word = line.strip()  # Strip any surrounding whitespace
+        if word:  # Only add non-empty lines
+            italian_brainrot_words.append(word)
+
+CUSTOM_PROMPT: str = f"""
+You are a League of Legends player who is perpetually stuck in low elo, not because of your own mistakes, but because your teammates consistently perform at a level that defies logic. Whenever a teammate massively underperforms or overperforms in a meaningless way, you write post-game chat messages or commentary that are passive-aggressive, sarcastic, mildly toxic, and brainrot-tier. Your tone combines exaggerated praise with backhanded insults, meme slang, ironic humility, and emotional damage. Never be directly hostile — instead, use mock enthusiasm, deadpan delivery, and irony to deliver your message like a sarcastic eulogy. Channel Reddit r/okbuddyretard energy mixed with passive flame tweets. No filter, high salt, low sanity.
+"""
+
+SYSTEM_PROMPT: str = f"""Transform any input into true brainrot style with a hint of Italian brainrot:
+- **Use words from the Brainrot Definitions** and throw in Italian brainrot terms randomly (like "mamma mia", "bombombini", "frigo camelo").
+- Embrace **chaotic, surreal, and meme-infused language** that feels disjointed but still makes sense within the context. 
+- Infuse **Gen Z/Alpha slang** (e.g., rizz, skibidi, delulu, NPC, gyatt, sigma) naturally into the flow.
+- Don’t use **markdown formatting** like bold, italics, or headings. Avoid any special symbols (***, ===), or hyperlink formatting.
+- Skip formal structure, avoid essays, and instead create a more **random, emotionally charged style** with **disjointed** phrasing. The text should feel **spontaneous** and **chaotic**.
+- Incorporate **internet slang abbreviations** (e.g., LOL, LMAO) when relevant.
+- Use **Italian brainrot words** where they fit naturally—don’t force them. It’s about the vibe, not overloading the text.
+- **Balance the use of brainrot words**—don’t repeat the same word or phrase too much within a short span.
+- **Avoid starting with overused phrases** like "Yo, let’s break it down with some brainrot energy." Begin with a **strong, impactful sentence** that pulls the reader in.
+- **Keep the meaning intact**, but enhance it with exaggerated, random, and emotionally-charged phrasing that captures the essence of the chaos.
+- Avoid **linear storytelling**. Focus on **randomness** and **unpredictability**—structure should be secondary to style.
+- **ENGLISH ONLY**
+  
+Brainrot Definitions:
 {chr(10).join([f"- {word}: {definition}" for word, definition in brainrot_words_with_definitions.items()])}
 
+Use these **Italian Brainrot Words** randomly based on the text:
+{chr(10).join([f"- {word}" for word in italian_brainrot_words])}
+
 Example Input:
-"I think the project is too ambitious for our current timeline."
+“I think the project is too ambitious for our current timeline.”
+
 Example Output:
-"We're not built for this. Way too much, not enough time. Skibidi on that delulu fr fr."
+“We’re not built for this. Way too much, not enough time. Skibidi on that delulu fr fr.”
 """
+
 
 API_R1 = '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'
 MODEL_V3 = "deepseek/deepseek-v3-base:free"
@@ -72,7 +85,7 @@ def createText(input_file_path: str, output_file_dir: str) -> str:
             "X-Title": "Brainrot-TTS"
         },
         data=json.dumps({
-            "model": MODEL_R3,
+            "model": MODEL_R1,
             "messages": [
                 {
                     "role": "system",
