@@ -65,10 +65,12 @@ def createText(input_file_path: str, output_file_dir: str) -> str:
     {chr(10).join([f"- {word}" for word in italian_brainrot_words])}
     """
 
-    API_R1 = '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'
+    # DeepSeek api models
     MODEL_V3 = "deepseek/deepseek-v3-base:free"
     MODEL_R1 = "deepseek/deepseek-r1:free"
     MODEL_R3 = "deepseek/deepseek-chat:free"
+
+    api = os.environ.get("OPEN_ROUTER_API")
     # Read user input from input.txt
     with open(input_file_path, "r", encoding="utf-8") as f:
         user_input = f.read().strip()
@@ -77,7 +79,7 @@ def createText(input_file_path: str, output_file_dir: str) -> str:
     response = requests.post(
         url="https://openrouter.ai/api/v1/chat/completions",
         headers={
-            "Authorization": f"Bearer {API_R1}",
+            "Authorization": f"Bearer {api}",
             "Content-Type": "application/json",
             "X-Title": "Brainrot-TTS"
         },
