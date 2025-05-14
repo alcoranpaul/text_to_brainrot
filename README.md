@@ -64,6 +64,11 @@ Before running the script, ensure you have the following installed:
 
     > [!note] When there is no video found in the output/background_videos, you will be a prompt to download a YT video from the channel [@OrbitalNCG](https://www.youtube.com/@OrbitalNCG/videos)
 
+## Warnings
+- Cancelling during runtime may prematurely cause errors in api requests!
+- Do not open any generated files during runtime!
+- Subtitle generation may be inconsistent due to the nature of MS-TTS's generated audio
+- Translation may be inconsistent due to free usage of DeepSeek API. Consider switching to a more premium version of Content generated AI.
 
 ## Script Descriptions
 
