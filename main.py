@@ -51,7 +51,7 @@ def _generateText(input_file_path: str, output_brainrot_text_dir: str) -> str:
         elif user_choice == "n":
             if os.path.exists(brainrot_text_path):
                 os.remove(brainrot_text_path)
-                print(f"🗑️ Removed trimmed video: {brainrot_text_path}")
+                print(f"🗑️ Removed brainrot_text: {brainrot_text_path}")
         elif user_choice == "x":
             sys.exit(0)
 
@@ -82,6 +82,9 @@ async def _generateAudio(output_audio_dir: str, brainrot_text_path: str) -> str:
     print("🔊 Generating audio...")
     audio_file_path = await generateAudio(output_audio_dir, brainrot_text_path)
     end = time.time()
+
+    if audio_file_path == None:
+        sys.exit(0)
     print(f"✅ Audio done in {end - start:.2f}s\n")
 
     return audio_file_path
@@ -107,6 +110,8 @@ async def _generateSubtitiles(audio_file_path: str, brainrot_text_path: str) -> 
     subtitle_file_path = generateSubtitlesSSA(
         audio_file_path, brainrot_text_path)
     end = time.time()
+    if subtitle_file_path == None:
+        sys.exit(0)
     print(f"✅ Subtitles done in {end - start:.2f}s\n")
 
     return subtitle_file_path
@@ -132,6 +137,8 @@ def _generateFinalVideo(audio_file_path: str, subtitle_file_path: str) -> str:
     final_video_path = make_video_with_subs(
         audio_file_path, subtitle_file_path)
     end = time.time()
+    if final_video_path == None:
+        sys.exit(0)
     print(f"Final video created in {end - start:.2f}s\n")
 
     return final_video_path
@@ -150,20 +157,20 @@ async def main():
         brainrot_text_path: str = _generateText(
             input_file_path, output_brainrot_text_dir)
 
-        audio_file_path: str = _generateAudio(
+        audio_file_path: str = await _generateAudio(
             output_audio_dir, brainrot_text_path)
 
-        subtitle_file_path: str = _generateSubtitiles(
-            audio_file_path, output_brainrot_text_dir)
+        subtitle_file_path: str = await _generateSubtitiles(
+            audio_file_path, brainrot_text_path)
 
         final_video_path: str = _generateFinalVideo(
-            output_audio_dir, subtitle_file_path)
+            audio_file_path, subtitle_file_path)
 
         end = time.time()
         print(
             f"🎉 Final path: {final_video_path} -- Program duration: {end - start:.2f}s")
     except Exception as e:
         print(f"Error: {e}")
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     asyncio.run(main())
