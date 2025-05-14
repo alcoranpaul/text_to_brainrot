@@ -24,19 +24,6 @@ Before running the script, ensure you have the following installed:
     pip install -r requirements.txt
     ```
 
-3.  **Prepare `.env` file:** Create a `.env` file in the same directory as your scripts and add your API keys:
-
-    ```dotenv
-    OPENROUTER_API_KEY=YOUR_OPENROUTER_API_KEY
-    DEEPL_API_MODEL=YOUR_PREFERRED_DEEPL_MODEL_ID (e.g., "deepl:gpt-3.5-turbo")
-    # MICROSOFT_TTS_KEY=YOUR_MICROSOFT_TTS_KEY (if using Microsoft TTS)
-    # MICROSOFT_TTS_REGION=YOUR_MICROSOFT_TTS_REGION (if using Microsoft TTS)
-    ```
-
-4.  **Prepare input video files:** Place background video files in a directory named `videos` in the same directory as the scripts.
-
-5.  **Prepare input text:** Create a plain text file named `input.txt` in the same directory as the scripts. This file will contain the text you want to transform.
-
 ## Usage
 
 1.  **Run the `main.py` script:**
