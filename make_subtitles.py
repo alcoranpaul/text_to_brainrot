@@ -1,5 +1,6 @@
 import os
 import re
+import traceback
 from typing import Tuple
 import warnings
 from fuzzywuzzy import fuzz  # type: ignore
@@ -58,36 +59,39 @@ def generateSubtitlesSSA(audio_file_path: str, text_file_path: str, special_word
 
     Raises:
         FileNotFoundError: If the audio file or text file does not exist.
-        Exception: If an error occurs during the subtitle generation process.
     """
     SUBTITLE_DIR = "output/subtitles"
     os.makedirs(SUBTITLE_DIR, exist_ok=True)
 
+    model = whisper.load_model("base")
+    transcript = model.transcribe(audio_file_path, word_timestamps=True)
+
+    lines = ""
+
     try:
-        if not os.path.exists(audio_file_path):
-            raise FileNotFoundError(f"Audio file not found: {audio_file_path}")
-        if not os.path.exists(text_file_path):
-            raise FileNotFoundError(f"Text file not found: {text_file_path}")
-
-        model = whisper.load_model("base")
-        transcript = model.transcribe(audio_file_path, word_timestamps=True)
-
         with open(text_file_path, 'r', encoding='utf-8') as file:
             lines = file.readlines()
-        content = ''.join(lines)
-        content = content.replace('-', ' ')
-        words = content.split()
-        num_words = len(words)
+    except FileNotFoundError as e:
+        print(f"{text_file_path} cannot be found")
+        return None
+    except PermissionError as e:
+        print(f"Permission denied in opening {text_file_path}: {e}")
+        return None
 
-        base_name = "subtitle_"
-        ext = ".ssa"
-        counter = 1
-        while os.path.exists(os.path.join(SUBTITLE_DIR, f"{base_name}{counter}{ext}")):
-            counter += 1
-        ssa_path = os.path.join(SUBTITLE_DIR, f"{base_name}{counter}{ext}")
+    content = ''.join(lines)
+    content = content.replace('-', ' ')
+    words = content.split()
+    num_words = len(words)
 
-        # SSA header
-        header = """[Script Info]
+    base_name = "subtitle_"
+    ext = ".ssa"
+    counter = 1
+    while os.path.exists(os.path.join(SUBTITLE_DIR, f"{base_name}{counter}{ext}")):
+        counter += 1
+    ssa_path = os.path.join(SUBTITLE_DIR, f"{base_name}{counter}{ext}")
+
+    # SSA header
+    header = """[Script Info]
 Title: Custom Matched Subtitles
 ScriptType: v4.00+
 PlayResX: 640
@@ -101,57 +105,57 @@ Style: Default,Arial,52,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,-1,0,0,0,100
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 """
 
-        events = []
-        list_index = 0
+    events = []
+    list_index = 0
 
-        for segment in transcript['segments']:
-            for word_info in segment['words']:
-                start_time = word_info['start']
-                end_time = word_info['end']
-                word_text = word_info['word']
+    for segment in transcript['segments']:
+        for word_info in segment['words']:
+            start_time = word_info['start']
+            end_time = word_info['end']
+            word_text = word_info['word']
 
-                cleaned_word_text = clean_word_for_comparison(word_text)
+            cleaned_word_text = clean_word_for_comparison(word_text)
 
-                if special_words and list_index < num_words:
-                    original_text = words[list_index]
-                    cleaned_original_text = clean_word_for_comparison(
-                        original_text)
+            if special_words and list_index < num_words:
+                original_text = words[list_index]
+                cleaned_original_text = clean_word_for_comparison(
+                    original_text)
 
-                    threshold = 20 if len(word_text) < 4 else 30
+                threshold = 20 if len(word_text) < 4 else 30
 
-                    if cleaned_word_text != cleaned_original_text:
-                        similarity = fuzz.ratio(
-                            cleaned_word_text, cleaned_original_text)
-                        if similarity < threshold:
-                            context_window = [clean_word_for_comparison(w) for w in words[max(
-                                0, list_index - 3):min(num_words, list_index + 4)]]
-                            best_match_from_context, relative_index = find_best_match(
-                                cleaned_word_text, context_window)
-                            list_index = max(
-                                0, list_index - 3) + relative_index
-                            word_text = best_match_from_context  # Use the best match
-                        else:
-                            word_text = original_text
+                if cleaned_word_text != cleaned_original_text:
+                    similarity = fuzz.ratio(
+                        cleaned_word_text, cleaned_original_text)
+                    if similarity < threshold:
+                        context_window = [clean_word_for_comparison(w) for w in words[max(
+                            0, list_index - 3):min(num_words, list_index + 4)]]
+                        best_match_from_context, relative_index = find_best_match(
+                            cleaned_word_text, context_window)
+                        list_index = max(
+                            0, list_index - 3) + relative_index
+                        word_text = best_match_from_context  # Use the best match
                     else:
-                        word_text = original_text  # Use original if cleaned forms match
+                        word_text = original_text
+                else:
+                    word_text = original_text  # Use original if cleaned forms match
 
-                    list_index += 1
+                list_index += 1
 
-                start_ssa = format_ssa_time(start_time)
-                end_ssa = format_ssa_time(end_time)
-                events.append(
-                    f"Dialogue: 0,{start_ssa},{end_ssa},Default,,0,0,0,,{word_text}")
+            start_ssa = format_ssa_time(start_time)
+            end_ssa = format_ssa_time(end_time)
+            events.append(
+                f"Dialogue: 0,{start_ssa},{end_ssa},Default,,0,0,0,,{word_text}")
 
+    try:
         with open(ssa_path, 'w', encoding='utf-8') as ssa_file:
             ssa_file.write(header)
             ssa_file.write("\n".join(events))
-
-        print(f"✅ SSA subtitle file saved to: {ssa_path}")
-        return ssa_path
-
     except FileNotFoundError as e:
-        print(f"Error: {e}")
-        raise
-    except Exception as e:
-        print(f"An unexpected error occurred during subtitle generation: {e}")
-        raise
+        print(f"{ssa_path} cannot be found")
+        return None
+    except PermissionError as e:
+        print(f"Permission denied in opening {ssa_path}: {e}")
+        return None
+
+    print(f"✅ SSA subtitle file saved to: {ssa_path}")
+    return ssa_path

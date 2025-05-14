@@ -72,10 +72,6 @@ def make_video_with_subs(audio_path: str, subtitle_path: str, resolution="1080x1
     Returns:
         Path to the generated final video file, or None if an error occurred.
     """
-    OUTPUT_PATH = "output"  # Assuming OUTPUT_PATH is defined elsewhere
-    # Assuming TRIMMED_VIDEO_DIR is defined elsewhere
-    TRIMMED_VIDEO_DIR = "output/trimmed_videos"
-    VIDEO_DIR = "videos"  # Assuming VIDEO_DIR is defined elsewhere
 
     os.makedirs(OUTPUT_PATH, exist_ok=True)
     os.makedirs(TRIMMED_VIDEO_DIR, exist_ok=True)
@@ -92,8 +88,10 @@ def make_video_with_subs(audio_path: str, subtitle_path: str, resolution="1080x1
         # Generate dynamic trimmed video filename
         trimmed_base = "trimmed_"
         trimmed_counter = 1
+
         while os.path.exists(os.path.join(TRIMMED_VIDEO_DIR, f"{trimmed_base}{trimmed_counter}.mp4")):
             trimmed_counter += 1
+
         trimmed_video_filename = f"{trimmed_base}{trimmed_counter}.mp4"
         trimmed_video_path = os.path.join(
             TRIMMED_VIDEO_DIR, trimmed_video_filename)
@@ -101,21 +99,17 @@ def make_video_with_subs(audio_path: str, subtitle_path: str, resolution="1080x1
         final_output_path = os.path.join(OUTPUT_PATH, file_name)
 
         # Pick random video and get audio duration
-        # Assuming get_random_video is defined elsewhere
         random_video = get_random_video(VIDEO_DIR)
-        # Assuming get_audio_duration is defined elsewhere
         duration = get_audio_duration(audio_path)
 
         # Trim the video
-        # Assuming trim_video_random is defined elsewhere
         trim_video_random(random_video, duration, trimmed_video_path)
 
         subtitle_path = os.path.normpath(subtitle_path)
 
         # *** ENSURE subtitle_path is correct ***
         if not os.path.exists(subtitle_path):
-            print(f"ERROR: Subtitle file not found at: {subtitle_path}")
-            return None  # Exit if subtitle file is missing!
+            raise (f"Subtitle file not found at: {subtitle_path}")
 
         subtitle_path_ffmpeg = subtitle_path.replace('\\', '/')
         width, height = map(int, resolution.split('x'))
@@ -152,11 +146,3 @@ def make_video_with_subs(audio_path: str, subtitle_path: str, resolution="1080x1
     except subprocess.CalledProcessError as e:
         print(f"FFmpeg error: {e}")
         return None
-    except Exception as e:
-        print(f"An unexpected error occurred during video creation: {e}")
-        return None
-
-
-if __name__ == "__main__":
-    make_video_with_subs("output/audio/audio_2.mp3",
-                         "output/subtitles/subtitle_2.srt")
