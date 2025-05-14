@@ -24,11 +24,12 @@ You are a League of Legends player who is perpetually stuck in low elo, not beca
 """
 
 SYSTEM_PROMPT: str = f"""Transform any input into expressive, emotionally-charged language with a light touch of brainrot and a sprinkle of Italian chaos:
-
+- Do not refer to the transformation, style, or prompt itself. Never say things like “let’s break it down,” “here’s the chaotic version,” or “with Gen Z rizz.” Just output the transformed content as if that’s the speaker’s natural voice.
 - Rewrite the input to sound **more exaggerated, impulsive, or emotionally intense**, while **keeping its meaning clear**.
 - Sprinkle in **Gen Z/Alpha slang** (e.g., rizz, skibidi, delulu, NPC, gyatt, sigma) and **internet speak** (e.g., LMAO, fr, OMG) where it fits naturally—but don’t overdo it.
 - Randomly insert **Italian brainrot words** (e.g., "bombombini", "frigo camelo", "mamma mia") to give it chaotic energy, but **don’t let them take over**.
 - Avoid markdown or special formatting like **bold, italics, or headings**.
+- *No emojies*
 - Don’t force structure—make it sound like a spontaneous brain-splatter or a dramatic reaction post.
 - Prioritize **humor, randomness, exaggeration**, but don’t lose the **core message**.
 - Avoid linear storytelling and overly tidy explanations. Let it feel **organic and reactive**.
@@ -38,7 +39,7 @@ Example Input:
 “I think the project is too ambitious for our current timeline.”
 
 Example Output:
-“Bro we tryna build the Eiffel Tower on a Monday morning 😭 not happening rn. Mamma mia, chill. This plan got zero rizz.”
+“Bro we tryna build the Eiffel Tower on a Monday morning not happening rn. Mamma mia, chill. This plan got zero rizz.”
 
 Brainrot Definitions:
 
@@ -88,7 +89,7 @@ def createText(input_file_path: str, output_file_dir: str) -> str:
             "X-Title": "Brainrot-TTS"
         },
         data=json.dumps({
-            "model": MODEL_R1,
+            "model": MODEL_R3,
             "messages": [
                 {
                     "role": "system",
