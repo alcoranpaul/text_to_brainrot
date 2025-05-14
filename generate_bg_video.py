@@ -10,6 +10,15 @@ CHANNEL_URL = "https://www.youtube.com/@OrbitalNCG/videos"
 
 
 def get_audio_duration(audio_file_path):
+    """
+    Retrieves the duration of an audio file.
+
+    Args:
+        audio_file_path (str): The path to the audio file.
+
+    Returns:
+        float: The duration of the audio file in seconds.
+    """
     audio_clip = AudioFileClip(audio_file_path)
     duration = audio_clip.duration
     audio_clip.close()
@@ -17,6 +26,18 @@ def get_audio_duration(audio_file_path):
 
 
 def get_random_video_url(channel_url):
+    """
+    Retrieves a random video URL from a YouTube channel.
+
+    Args:
+        channel_url (str): The URL of the YouTube channel.
+
+    Returns:
+        str: A random video URL from the channel.
+
+    Raises:
+        Exception: If no video URLs are found or if the response format is unexpected.
+    """
     ydl_opts = {
         'quiet': True,
         'extract_flat': True,  # Extract only video URLs (not full data)
@@ -40,6 +61,19 @@ def get_random_video_url(channel_url):
 
 
 def download_full_video(video_url):
+    """
+    Downloads a video from a given URL, ensuring it meets size and title criteria.
+
+    Args:
+        video_url (str): The URL of the video to download.
+
+    Returns:
+        str: The path to the downloaded video file.
+
+    Raises:
+        ValueError: If the video title contains "Vertical" or the video size exceeds 1GB.
+        Exception:  If there is an error during the download process.
+    """
     # Use yt-dlp to get video metadata
     ydl_opts = {
         # Limit to 1080p resolution
@@ -85,18 +119,21 @@ def download_full_video(video_url):
             # Use the video ID instead of re-extracting
             download_ydl.download([video_info['id']])
 
-    print(f"✅ Full video downloaded and saved as '{output_file}'")
+        print(f"✅ Full video downloaded and saved as '{output_file}'")
 
-    # Remove the .part file if it exists
-    part_file = f"{output_file}.part"
-    if os.path.exists(part_file):
-        os.remove(part_file)
-        print(f"🗑️ Removed temporary file: {part_file}")
+        # Remove the .part file if it exists
+        part_file = f"{output_file}.part"
+        if os.path.exists(part_file):
+            os.remove(part_file)
+            print(f"🗑️ Removed temporary file: {part_file}")
 
-    return output_file
+        return output_file
 
 
 def download_random_full_video():
+    """
+    Downloads a random full-length video from a YouTube channel, retrying on failure.
+    """
     while (True):
         try:
             video_url = get_random_video_url(CHANNEL_URL)
@@ -108,6 +145,9 @@ def download_random_full_video():
 
 
 def main():
+    """
+    Main function to download a random video from a YouTube channel with retry logic.
+    """
     # Retry loop in case a video fails to download
     while (True):
         try:
