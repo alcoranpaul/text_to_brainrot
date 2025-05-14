@@ -11,7 +11,7 @@ Before running the script, ensure you have the following installed:
 * **FFmpeg** (for audio and video processing). Make sure the `ffmpeg` executable is in your system's PATH.
 * **OpenAI Whisper** (for audio transcription). This will be installed as a dependency.
 * **Microsoft TTS (Speech SDK)** (optional, for alternative audio generation). Installation instructions can be found in the [Microsoft Azure Speech SDK documentation](https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/quickstart-python).
-* **DeepSeek API Key** You'll need to sign up for a DeepSeek API account and obtain an API key.
+* **DeepSeek Model Key** Taken from OpenRouter's models.
 * **OpenRouter API Key** (for accessing various language models, potentially including DeepL and others). You'll need to sign up for an OpenRouter account and obtain an API key.
 
 ## Installation
@@ -72,10 +72,10 @@ Before running the script, ensure you have the following installed:
 
 ## Script Descriptions
 
-* **`main.py`**: The main entry point of the application. It orchestrates the entire process: generating text, audio, subtitles, and the final video. It also handles loading environment variables from the `.env` file.
+* **`main.py`**: The main entry point of the application. It orchestrates the entire process: generating text, audio, subtitles, and the final video.
 * **`generate_text.py`**: Contains the `createText` function responsible for transforming the input text into "brain rot" style. The `_generateText` function in `main.py` handles the user confirmation loop for this generated text.
 * **`generate_audio.py`**: Contains the `generateAudio` function, which handles text-to-speech. It likely has logic to use different TTS engines (e.g., Whisper for direct audio generation if capable, Microsoft TTS, or models accessible through the OpenRouter API). The `_generateAudio` function in `main.py` manages the audio generation process.
-* **`make_subtitles.py`**: Contains the `generateSubtitlesSSA` function, which transcribes the audio (if needed) and potentially uses fuzzy matching to align the generated subtitles with the original (or slightly modified) brain rot text, saving them in SSA format. The `_generateSubtitiles` function in `main.py` handles the subtitle generation.
+* **`make_subtitles.py`**: Contains the `generateSubtitlesSSA` function, which transcribes the audio and potentially uses fuzzy matching to align the generated subtitles with the original (or slightly modified) brain rot text, saving them in SSA format. The `_generateSubtitiles` function in `main.py` handles the subtitle generation.
 * **`make_video.py`**: Contains the `make_video_with_subs` function, which takes the generated audio and subtitle files, a random video from the `videos` directory, and uses FFmpeg to combine them into a final video file with embedded subtitles. The `_generateFinalVideo` function in `main.py` manages the final video creation.
 
 ## Configuration
@@ -84,7 +84,6 @@ The script relies on environment variables loaded from the `.env` file for API k
 
 * **`OPENROUTER_API_KEY`**: Your API key for accessing models through the OpenRouter API.
 * **`DEEPL_API_MODEL`**: The specific DeepL model ID to use via OpenRouter (if you intend to use DeepL).
-* **`MICROSOFT_TTS_KEY` and `MICROSOFT_TTS_REGION`**: Your Microsoft Azure Speech service key and region (if you intend to use Microsoft TTS directly).
 
 Refer to the individual script files for any specific parameters or logic related to the chosen TTS engine and other processing steps.
 
