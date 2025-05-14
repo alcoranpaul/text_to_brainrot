@@ -29,7 +29,7 @@ async def main():
         end = time.time()
         print(f"✅ Brainrot text done in {end - start:.2f}s\n")
         user_choice = input("Confirm text? Y/N/X: ").strip().lower()
-
+        print("")
         if user_choice == "y":
             hasChosenBrainrotText = True
         elif user_choice == "n":
