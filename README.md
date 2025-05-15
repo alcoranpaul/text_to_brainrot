@@ -16,7 +16,7 @@ Before running the script, ensure you have the following installed:
 
 ## Installation
 
-1.  **Clone the repository** (if you have one) or **save the provided Python scripts** (`main.py`, `generate_text.py`, `generate_audio.py`, `make_subtitles.py`, `make_video.py`) in the same directory.
+1.  **Clone the repository** 
 
 2.  **Install the required Python libraries:**
 
@@ -42,7 +42,7 @@ Before running the script, ensure you have the following installed:
 
 3.  **Create a `.env` file:**
 
-    * In the same directory as your Python scripts (e.g., where `main.py` is located), create a new file named exactly `.env` (without any extra file extensions).
+    * In the same directory as your Python scripts (e.g., where `main.py` is located), create a new file named exactly `.env`.
     * Open the `.env` file in a text editor.
     * Add your OpenRouter API key to the file using the following format:
 
